@@ -1,0 +1,9 @@
+{
+  "firebase": "angular-ticket",
+  "public": ".",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}
