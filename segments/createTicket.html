@@ -1,0 +1,54 @@
+<form name="CreateTicketForm" ng-submit="createTicket()">
+
+	<div ng-include src="'segments/leftBar.html'"></div>
+
+	<div class="col-xs-12" ng-class="{'col-sm-12': !userInfo.email, 'col-sm-9': userInfo.email}" style="float:right">
+		<div class="panel panel-primary">
+		  <div class="panel-heading">Your Details</div>
+		  <div class="panel-body">
+		  	<div class="form-group">
+		    	<input class="form-control" ng-model="name" name="name" type='text' placeholder='Full Name' required>
+		    </div>
+		    <div class="form-group">
+		    	<input class="form-control" ng-model="email" name="email" type='email' placeholder='Email' required>
+		  	</div>
+		  	<div class="form-group">
+		    	<input class="form-control" ng-model="number" name="number" type='text' placeholder='Contact Number' required>
+		  	</div>
+		  </div>
+		</div>
+	</div>
+
+	<div class="col-xs-12" ng-class="{'col-sm-12': !userInfo.email, 'col-sm-9': userInfo.email}" style="float:right">
+		<div class="panel panel-primary">
+		  <div class="panel-heading">Details</div>
+		  <div class="panel-body">
+
+		  	<div class="form-group">
+		    	<input class="form-control" ng-model="subject" name="subject" type='text' placeholder='Ticket Subject' required>
+		  	</div>
+
+		  	<select class="form-control" name="group" ng-model="group" required>
+			  	<option ng-repeat="group in ticketGroups">{{ group }}</option>
+			</select>
+		    
+		  </div>
+		</div>
+	</div>
+
+	<div class="col-xs-12" ng-class="{'col-sm-12': !userInfo.email, 'col-sm-9': userInfo.email}" style="float:right">
+		<div class="panel panel-primary">
+		  <div class="panel-heading">Description</div>
+		  <div class="panel-body">
+		    <div text-angular ng-model="htmlVariable" required></div>
+		  </div>
+		</div>
+	</div>
+
+	<div class="col-xs-12" ng-class="{'col-sm-12': !userInfo.email, 'col-sm-9': userInfo.email}" style="float:right">
+		<div align="center">
+			<button ng-class="{disabled: !CreateTicketForm.$valid}" ng-click="createTicket()" type="button" class="btn btn-primary btn-lg btn-block">Create Ticket</button>
+		</div>
+	</div>
+
+</form>

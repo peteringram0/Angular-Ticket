@@ -1,0 +1,44 @@
+<div ng-include src="'segments/leftBar.html'"></div>
+
+<div class="col-sm-9 col-xs-12" style="float:right">
+	<div class="panel panel-primary">
+	  <div class="panel-heading">
+
+		<div class="input-group">
+  			<span class="input-group-btn">
+  				<button class="btn btn-success" type="button" ng-click="ticketSelectionShow('open')">All Open Tickets</button>
+    			<button class="btn btn-danger" type="button" ng-click="ticketSelectionShow('closed')">All Closed Tickets</button>
+  			</span>
+  			<input ng-model="showGroup.$" type="text" class="form-control" placeholder="Search Tickets">
+		</div>
+
+	  </div>
+
+	  <div class="panel-body">
+
+	  	<div class="table-responsive">
+			<table class="table table-striped table-hover">
+				<thead>
+					<th>Type</th>
+					<th ng-click="predicate = 'status'">Status</th>
+					<th ng-click="predicate = 'date'">Create Date</th>
+					<th ng-click="predicate = 'subject'">Subject</th>
+					<th ng-click="predicate = 'group'">Group</th>
+					<th ng-click="predicate = 'creator'">Creator</th>
+				</thead>
+				<tbody>
+					<tr class="enableHover" ng-repeat="(id, object) in tickets | orderByPriority | orderBy:predicate:true | filter:showGroup:strict" ng-click="goToTicket(object.$id)">
+						<td><span class="glyphicon glyphicon-tag"></span></td>
+						<td><span class="label" ng-class="status == 'open' ? 'label-success' : 'label-danger'">{{status}}</span></td>
+						<td>{{object.date | date : 'dd/MM/yyyy @ HH:mm' }}</td>
+						<td>{{ object.subject }}</td>
+						<td>{{ object.group }}</td>
+						<td>{{object.name}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+	  </div>
+	</div>
+</div>

@@ -1,0 +1,28 @@
+<div class="col-md-12" align="center">
+	  <h1>System Config</h1>
+</div>
+
+<hr>
+
+<div class="col-md-12" align="center">
+	<div class="panel panel-primary">
+	  <div class="panel-heading">Ticket Groups</div>
+	  <div class="panel-body" >
+			
+			<form name="UpdateGroupForm" ng-submit="updateGroups()">
+			  	<div ng-repeat="(groupID, group) in config.groups">
+				  	<div class="form-group">
+				  		<input class="form-control" type="text" ng-model="config.groups[groupID]"/>
+				  	</div>
+			  	</div>
+		    </form>
+
+	  </div>
+	</div>
+</div>
+
+<div class="col-xs-12">
+	<div align="center">
+		<button ng-click="updateGroups()" type="button" class="btn btn-primary btn-lg btn-block">Update Groups</button>
+	</div>
+</div>

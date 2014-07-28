@@ -1,0 +1,6 @@
+<div class="col-sm-3 hidden-xs" ng-if="userInfo.email">
+	<div class="list-group">
+    	<a href="#/tickets/open/all" ng-class="getURL('/tickets/open/all')" class="list-group-item">All Open</a>
+		<a ng-repeat="(key, group) in groupcounts.group" ng-class="getURL('/tickets/open/'+key)" href="#/tickets/open/{{key}}" class="list-group-item">{{ key }} <span class="label label-success">{{ group }}</span></a>
+	</div>
+</div>

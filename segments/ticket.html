@@ -1,0 +1,110 @@
+<div ng-include src="'segments/leftBar.html'"></div>
+
+<div class="col-sm-9 col-xs-12" style="float:right">
+	<div class="panel panel-primary" dbRef="{{ ticketID }}">
+	  <div class="panel-heading">
+	  	<h3>{{ ticket.subject }}
+
+	  		<span class="label" ng-class="status == 'open' ? 'label-success' : 'label-danger'">{{status}}</span>
+	  	
+	  		<div class="btn-group pull-right">
+
+			  	<div class="btn-group">
+			  		<button ng-if="status == 'closed'" type="button" class="btn btn-primary" ng-click="changeTicketStatus(ticketID, 'open')">Re-Open Ticket</button>
+			  		<button ng-if="status == 'open'" type="button" class="btn btn-primary" ng-click="changeTicketStatus(ticketID, 'closed')">Close Ticket</button>
+				  	<!--
+				  	<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+				   		<span class="caret"></span>
+				    	<span class="sr-only">Toggle Dropdown</span>
+				  	</button>
+				  	<ul class="dropdown-menu" role="menu">
+					    <li><a href="#">Action</a></li>
+					    <li class="divider"></li>
+					    <li><a href="#">Action 2</a></li>
+				  	</ul>
+				  	-->
+				</div>
+
+
+				<div class="btn-group">
+				  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+				    {{ticket.group}} <span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu" role="menu">
+				    <li ng-repeat="group in config.groups" ng-click="changeTicketGroup(ticketID,group)">
+				    	<a>{{group}}</a>
+				    </li>
+				  </ul>
+				</div>
+
+				<!--
+			  	<button type="button" class="btn btn-primary">1</button>
+			  	<button type="button" class="btn btn-primary">2</button>
+			  	-->
+
+			</div>
+
+		</h3>
+	  </div>
+	  <div class="panel-body">
+	  	<h4>{{ ticket.name }} <small>({{ ticket.email }})</small></h4>
+
+	  	<hr>
+
+	  	<div>
+		  	
+		  	<div class="well well-sm">
+			  	<span class="label label-warning"><span class="glyphicon glyphicon-user"></span></span>
+	  			<span class="label label-warning">{{ticket.name}}</span>
+	  			<span class="label label-warning">{{ticket.date | date : 'dd/MM/yyyy @ HH:mm' }}</span>
+	  			<hr>
+	  			<p>{{ ticket.details }}</p>
+		  	</div>
+
+	  	</div>
+
+	  	<div ng-repeat="(commentId, comment) in ticket.comments">
+	  		
+	  		<div class="well well-sm">
+
+	  			<div style="float:right">
+		  			<span class="label label-primary"><span class="glyphicon glyphicon-globe"></span></span>
+		  			<span class="label label-primary">{{comment.commenterGroup}}</span>
+		  			<span class="label label-primary">{{comment.commenterName}}</span>
+		  			<span class="label label-primary">{{comment.time | date : 'dd/MM/yyyy @ HH:mm' }}</span>
+	  			</div>
+	  			<hr>
+	  			<div>
+	  				<p ng-bind-html="comment.comment"></p>
+	  			</div>
+
+	  		</div>
+
+	  	</div>
+
+	  </div>
+	</div>
+</div>
+
+<div ng-class="{hidden: status != 'open'}">
+	<form name="UpdateTicketForm" ng-submit="addCommentToTicket('agent')">
+
+		<div class="col-sm-9 col-xs-12" style="float:right">
+			<div class="panel panel-info" dbRef="{{ id }}">
+			  <div class="panel-heading">
+			  Update Ticket
+			  </div>
+			  <div class="panel-body">
+			  	<div text-angular ng-model="ticketUpdateText" required></div>
+			  </div>
+			</div>
+		</div>
+
+	</form>
+
+	<div class="col-sm-9 col-xs-12" style="float:right">
+		<div align="center">
+			<button ng-class="{disabled: !UpdateTicketForm.$valid}" ng-click="addCommentToTicket('agent')" type="button" class="btn btn-primary btn-lg btn-block">Add Update!</button>
+		</div>
+	</div>
+</div>
