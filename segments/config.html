@@ -12,7 +12,7 @@
 			<form name="UpdateGroupForm" ng-submit="updateGroups()">
 			  	<div ng-repeat="(groupID, group) in config.groups">
 				  	<div class="form-group">
-				  		<input class="form-control" type="text" ng-model="config.groups[groupID]"/>
+				  		<input class="form-control" type="text" ng-model="config.groups[groupID]" old-id="groupID"/>
 				  	</div>
 			  	</div>
 		    </form>

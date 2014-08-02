@@ -27,7 +27,7 @@
 					<th ng-click="predicate = 'creator'">Creator</th>
 				</thead>
 				<tbody>
-					<tr class="enableHover" ng-repeat="(id, object) in tickets | orderByPriority | orderBy:predicate:true | filter:showGroup:strict" ng-click="goToTicket(object.$id)">
+					<tr class="enableHover" ng-repeat="(id, object) in tickets | orderBy:predicate:true | filter:showGroup:strict" ng-click="goToTicket(object.$id)">
 						<td><span class="glyphicon glyphicon-tag"></span></td>
 						<td><span class="label" ng-class="status == 'open' ? 'label-success' : 'label-danger'">{{status}}</span></td>
 						<td>{{object.date | date : 'dd/MM/yyyy @ HH:mm' }}</td>

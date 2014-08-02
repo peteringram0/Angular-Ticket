@@ -38,18 +38,21 @@ app.config(['$routeProvider', function($routeProvider){
           templateUrl: "segments/config.html",
           private : true
       }).
+      when('/test', {
+          controller: 'test',
+          templateUrl: "segments/test.html",
+          private : false
+      }).
     	otherwise({
         	redirectTo: '/home'
       });
 }]);
-
 
 app.run(function ($rootScope, constants) {
   $rootScope.constants = constants; // Lets make these settings system wide
   $rootScope.alert = [];
 });
 
-/* define what happpens when the route changes */
 app.run(function($location,$route,$rootScope,HelperFactory) {
   $rootScope.$on('$routeChangeStart', function(event, next, current) {
     var nextPath = $location.path();
@@ -73,7 +76,6 @@ app.directive('navagationbar', function() {
   		templateUrl: 'segments/navagationBar.html'
   	};
 });
-
 
 app.factory("FirebaseFactory",function($rootScope,HelperFactory){
 
@@ -113,26 +115,19 @@ app.factory("FirebaseFactory",function($rootScope,HelperFactory){
 }); // End FirebaseFactory
 
 
-
-
 app.factory("TicketsFactory",function($rootScope,HelperFactory,$firebase){
 
   return{
     create: function(data){
 
-      var ref = new Firebase($rootScope.constants.firebase+'tickets/open');
+      var obj = $firebase(new Firebase($rootScope.constants.firebase+'tickets/open')).$asArray();
 
-      return $firebase(ref).$add(data).then(
+      return obj.$add(data).then(
         function (ref) {
           var id = ref.name();
-          HelperFactory.AlertsAdd({ type: 'success', msg: 'Ticket Created.' });
+          HelperFactory.AlertsAdd({ type: 'success', msg: 'Ticket Created. <a href="#/ticket/open/'+id+'">Please save this link to check and update your ticket status</a>' });
           $rootScope.$broadcast('BroadcastAlertAddedInside');
-         // console.log('SUCCESS: added ticket with id:', id);
-          return id;
-
-//$firebase(ref).id.$priority = 1;
-//$firebase(ref).$save("id"); 
-
+         // return id;
         },
         function (err) {
           console.error('ERROR:', err);
@@ -145,17 +140,17 @@ app.factory("TicketsFactory",function($rootScope,HelperFactory,$firebase){
     },
     get: function(status){
       var ref = new Firebase($rootScope.constants.firebase+'tickets/'+status);
-      return $firebase(ref);
+      return $firebase(ref).$asArray();
     },
     find: function(id,status){
       var ref = new Firebase($rootScope.constants.firebase+'tickets/'+status+'/'+id);
-      return $firebase(ref);
+      return $firebase(ref).$asObject();
     },
     addTicketUpdate: function(id,data){
-      
-      var ref = new Firebase($rootScope.constants.firebase+'tickets/open/'+id+'/comments');
 
-      $firebase(ref).$add(data).then(function(ref) {
+      var obj = $firebase(new Firebase($rootScope.constants.firebase+'tickets/open/'+id+'/comments')).$asArray();
+
+      obj.$add(data).then(function(ref) {
         ref.name();
       });
 
@@ -165,9 +160,9 @@ app.factory("TicketsFactory",function($rootScope,HelperFactory,$firebase){
       var oldTicketLocation = new Firebase($rootScope.constants.firebase+'tickets/'+currentStatus+'/'+id);
       var newTicketPath = new Firebase($rootScope.constants.firebase+'tickets/'+status+'/'+id);
 
-      var oldTicketData = $firebase(oldTicketLocation);
+      var oldTicketData = $firebase(oldTicketLocation).$asArray();;
 
-      $firebase(newTicketPath).$set(oldTicketData);
+      $firebase(newTicketPath).$asArray().$set(oldTicketData);
 
       $firebase(oldTicketLocation).$remove();
 
@@ -185,13 +180,17 @@ app.factory("TicketsFactory",function($rootScope,HelperFactory,$firebase){
     countOpenTicketsPerGroup: function(){
 
       var countTickets = [];
-      countTickets.group = {};
+        countTickets.group = {};
 
-      var ref = new Firebase($rootScope.constants.firebase+'tickets/open');
-
-      ref.on('value', function(snapshot) {
+      var obj = new Firebase($rootScope.constants.firebase+'tickets/open');
+  
+      obj.on('value', function(snapshot) {
         var tickets = snapshot.val();
-        countTickets.push({group: ''}); // clear down the counters
+
+        if(Object.getOwnPropertyNames(countTickets.group).length != 0){
+          countTickets.group = {};
+        }
+
         for (ticket in tickets) {
           group = countTickets.group[tickets[ticket]['group']];
           if(!group){
@@ -205,8 +204,8 @@ app.factory("TicketsFactory",function($rootScope,HelperFactory,$firebase){
       return countTickets;
 
     } // End function, countOpenTickets
+  }
 
-  } // End return
 }); // End TicketsFactory
 
 
@@ -236,9 +235,12 @@ app.controller("TicketController",function($rootScope,$scope,HelperFactory,Ticke
     $location.path('/tickets/open/all');
   };
 
+  $scope.changeTicketGroup = function(newGroup){
+    alert(newGroup);
+  }
+
   $scope.changeTicketGroup = function(id,newGroup){
     TicketsFactory.changeTicketGroup(id, newGroup);
-    $rootScope.$broadcast('BroadcastReCountTickets');
   }
 
 });
@@ -301,10 +303,6 @@ app.controller("MyRootController",function($rootScope,$scope,HelperFactory,Fireb
       $scope.userInfo.email = HelperFactory.GetUserInfo().email;
     });
     $scope.groupcounts = TicketsFactory.countOpenTicketsPerGroup(); // list count per groups
-  });
-
-  $scope.$on('BroadcastReCountTickets', function() { // Re-run when it updates
-      $scope.groupcounts = TicketsFactory.countOpenTicketsPerGroup();
   });
 
 	$scope.login = function(){
@@ -371,12 +369,6 @@ app.factory("HelperFactory",function($rootScope){
 
 function AlertsFunction($scope,HelperFactory) {
 
-  $scope.addAlert = function() {
-    HelperFactory.AlertsAdd({ type: 'danger', msg: 'Oh snap! 2' });
-    $rootScope.$broadcast('BroadcastAlertAdded');
-   // $scope.alerts = HelperFactory.AlertsGet();
-  };
-
   $scope.closeAlert = function(index) {
   	HelperFactory.AlertsClose(index);
   };
@@ -390,13 +382,11 @@ app.factory("ConfigFactory",function($rootScope,$firebase){
   return{
     getConfig: function(range){
       var ref = new Firebase($rootScope.constants.firebase+'config/'+range);
-      return $firebase(ref);
+      return $firebase(ref).$asObject();
     },
     updateGroups: function(groupsArray){
       var ref = new Firebase($rootScope.constants.firebase+'config/groups');
-     // $firebase(ref).$update({groups: groupsArray});
-     
-      console.log(groupsArray);
+      $firebase(ref).$update({groups: groupsArray});
     }
   }
   
