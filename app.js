@@ -8,11 +8,6 @@ app.constant('constants', {
 
 app.config(['$routeProvider', function($routeProvider){
 	$routeProvider.
-    	when('/home', {
-	      //  controller: 'CreateTicketController',
-        	templateUrl: "segments/home.html",
-	        private : false
-    	}).
     	when('/createticket', {
 	        controller: 'CreateTicketController',
         	templateUrl: "segments/createTicket.html",
@@ -33,18 +28,13 @@ app.config(['$routeProvider', function($routeProvider){
           templateUrl: "segments/ticket.html",
           private : true
       }).
-      when('/configure', {
-          controller: 'ConfigController',
-          templateUrl: "segments/config.html",
-          private : true
-      }).
       when('/test', {
           controller: 'test',
           templateUrl: "segments/test.html",
           private : false
       }).
     	otherwise({
-        	redirectTo: '/home'
+        	redirectTo: '/createticket'
       });
 }]);
 
@@ -158,14 +148,19 @@ app.factory("TicketsFactory",function($rootScope,HelperFactory,$firebase){
     changeTicketStatus: function(id,status,currentStatus){
 
       var oldTicketLocation = new Firebase($rootScope.constants.firebase+'tickets/'+currentStatus+'/'+id);
-      var newTicketPath = new Firebase($rootScope.constants.firebase+'tickets/'+status+'/'+id);
+      var newTicketPath = new Firebase($rootScope.constants.firebase+'tickets/'+status);
 
-      var oldTicketData = $firebase(oldTicketLocation).$asArray();;
+      var oldTicket = []; // blank array for when we close tickets  :)
 
-      $firebase(newTicketPath).$asArray().$set(oldTicketData);
+      /* I have to do it this way with angularfire 8.0 :( */
+      oldTicketLocation.on('value', function(snapshot) {
+        oldTicket.push(snapshot.val()); // Lets get the data without any hidden vars
+      });
 
+      $firebase(newTicketPath).$set(id, oldTicket[0]);
       $firebase(oldTicketLocation).$remove();
 
+      oldTicket = [];
 
       HelperFactory.AlertsAdd({ type: 'info', msg: 'Ticket status changed to '+status });
       $rootScope.$broadcast('BroadcastAlertAddedInside');
@@ -215,18 +210,26 @@ app.controller("TicketController",function($rootScope,$scope,HelperFactory,Ticke
   $scope.ticket = TicketsFactory.find($routeParams.id,$scope.status);
   $scope.ticketID = $routeParams.id;
 
-  //$scope.config = ConfigFactory.getConfig('groups');
+  $scope.addCommentToTicket = function(){
 
-  $scope.addCommentToTicket = function(commenter){
-    
+    if(!HelperFactory.GetUserInfo().email){
+      commenter = 'user';
+      name = '';
+    } else {
+      commenter = 'agent';
+      name = HelperFactory.GetUserInfo().email;
+    }
+
     var data = {
       time: Firebase.ServerValue.TIMESTAMP,
       commenterGroup: commenter,
-      commenterName: 'Pass in users or agents id',
+      commenterName: name,
       comment: $scope.ticketUpdateText
     }
 
     TicketsFactory.addTicketUpdate($routeParams.id,data);
+
+    $scope.ticketUpdateText = '';
 
   };
 
@@ -376,30 +379,16 @@ function AlertsFunction($scope,HelperFactory) {
 } // End function
 
 
-
 app.factory("ConfigFactory",function($rootScope,$firebase){
 
   return{
     getConfig: function(range){
       var ref = new Firebase($rootScope.constants.firebase+'config/'+range);
       return $firebase(ref).$asObject();
-    },
-    updateGroups: function(groupsArray){
-      var ref = new Firebase($rootScope.constants.firebase+'config/groups');
-      $firebase(ref).$update({groups: groupsArray});
     }
   }
   
 }); // End FirebaseFactory
-
-app.controller('ConfigController',function($scope,$rootScope,ConfigFactory,TicketsFactory){
-
-  $scope.updateGroups = function(){
-    console.log($scope.config.groups);
-  //  ConfigFactory.updateGroups();
-  }
-
-});
 
 app.controller('GoogleChartDataController',function($scope,$rootScope,HelperFactory,$firebase){
 

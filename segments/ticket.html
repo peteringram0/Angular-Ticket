@@ -1,13 +1,13 @@
 <div ng-include src="'segments/leftBar.html'"></div>
 
-<div class="col-sm-9 col-xs-12" style="float:right">
+<div class="col-xs-12" ng-class="{'col-sm-12': !userInfo.email, 'col-sm-9': userInfo.email}" style="float:right">
 	<div class="panel panel-primary" dbRef="{{ ticketID }}">
 	  <div class="panel-heading">
 	  	<h3>{{ ticket.subject }}
 
 	  		<span class="label" ng-class="status == 'open' ? 'label-success' : 'label-danger'">{{status}}</span>
 	  	
-	  		<div class="btn-group pull-right">
+	  		<div class="btn-group pull-right" ng-if="userInfo.email">
 
 			  	<div class="btn-group">
 			  		<button ng-if="status == 'closed'" type="button" class="btn btn-primary" ng-click="changeTicketStatus(ticketID, 'open')">Re-Open Ticket</button>
@@ -24,7 +24,6 @@
 				  	</ul>
 				  	-->
 				</div>
-
 
 				<div class="btn-group">
 				  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -67,12 +66,21 @@
 	  		
 	  		<div class="well well-sm">
 
-	  			<div style="float:right">
+	  			<div style="float:right" ng-if="comment.commenterGroup == 'agent'">
 		  			<span class="label label-primary"><span class="glyphicon glyphicon-globe"></span></span>
 		  			<span class="label label-primary">{{comment.commenterGroup}}</span>
 		  			<span class="label label-primary">{{comment.commenterName}}</span>
 		  			<span class="label label-primary">{{comment.time | date : 'dd/MM/yyyy @ HH:mm' }}</span>
 	  			</div>
+
+	  			<div style="float:left" ng-if="comment.commenterGroup == 'user'">
+		  			<span class="label label-warning"><span class="glyphicon glyphicon-user"></span></span>
+		  			<span class="label label-warning">{{comment.commenterGroup}}</span>
+		  			<span class="label label-warning">{{comment.commenterName}}</span>
+		  			<span class="label label-warning">{{comment.time | date : 'dd/MM/yyyy @ HH:mm' }}</span>
+	  			</div>
+
+
 	  			<hr>
 	  			<div>
 	  				<p ng-bind-html="comment.comment"></p>
@@ -87,9 +95,9 @@
 </div>
 
 <div ng-class="{hidden: status != 'open'}">
-	<form name="UpdateTicketForm" ng-submit="addCommentToTicket('agent')">
+	<form name="UpdateTicketForm" ng-submit="addCommentToTicket()">
 
-		<div class="col-sm-9 col-xs-12" style="float:right">
+		<div class="col-xs-12" ng-class="{'col-sm-12': !userInfo.email, 'col-sm-9': userInfo.email}" style="float:right">
 			<div class="panel panel-info" dbRef="{{ id }}">
 			  <div class="panel-heading">
 			  Update Ticket
@@ -102,9 +110,9 @@
 
 	</form>
 
-	<div class="col-sm-9 col-xs-12" style="float:right">
+	<div class="col-xs-12" ng-class="{'col-sm-12': !userInfo.email, 'col-sm-9': userInfo.email}" style="float:right">
 		<div align="center">
-			<button ng-class="{disabled: !UpdateTicketForm.$valid}" ng-click="addCommentToTicket('agent')" type="button" class="btn btn-primary btn-lg btn-block">Add Update!</button>
+			<button ng-class="{disabled: !UpdateTicketForm.$valid}" ng-click="addCommentToTicket()" type="button" class="btn btn-primary btn-lg btn-block">Add Update!</button>
 		</div>
 	</div>
 </div>
