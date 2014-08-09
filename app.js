@@ -3,7 +3,7 @@ var app = angular.module('myapp', ['ngRoute', 'firebase', 'textAngular', 'ui.boo
 'use strict';
 
 app.constant('constants', {
-	firebase : "https://angular-ticket.firebaseio.com/",
+	firebase : "https://angular-ticket.firebaseio.com/"
 });
 
 app.config(['$routeProvider', function($routeProvider){
