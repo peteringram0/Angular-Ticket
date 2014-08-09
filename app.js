@@ -19,7 +19,6 @@ app.config(['$routeProvider', function($routeProvider){
 	        private : true
     	}).
       when('/liveboard', {
-         // controller: 'TicketsController',
           templateUrl: "segments/liveBoard.html",
           private : true
       }).
@@ -444,6 +443,5 @@ app.controller('GoogleChartDataController',function($scope,$rootScope,HelperFact
       $scope.chartScope();
     });
   });
-
 
 });
