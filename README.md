@@ -7,7 +7,14 @@ AngualrJS Ticketing Software
 
 <h4>Description</h4>
 <p>
-	AngularJS & Firebase ticketing system with live ticket & wallboard functionality. Currently in Beta development!!
+	AngularJS & Firebase ticketing system with live ticket & wallboard functionality. Currently in development!!. This application utilizes the very latest version of AngularJS & AngularFire.
+</p>
+
+<p>
+	<ul>
+		<li>AngularJS 1.2.12</li>
+		<li>AngularFire 8.0</li>
+	</ul>
 </p>
 
 <hr>
